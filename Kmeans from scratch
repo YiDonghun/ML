@@ -1,0 +1,36 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+def d(x,y):
+    return abs(x-y)
+
+def pred(x,c0,c1):
+    if d(x,c0)>d(x,c1):
+        return 1
+    elif d(x,c0)==d(x,c1):
+        return np.random.randint(2)
+    else:
+        return 0
+pred = np.vectorize(pred)
+
+def kmeans(X,max_iter,c0='rand',c1='rand'):
+    if (c0,c1)==('rand','rand'):
+        (c0,c1) = np.random.rand(2)*(np.max(X)-np.min(X))+np.min(X)
+    for i in range(0, max_iter):
+        Y=pred(X,c0,c1)
+ 
+        XY=np.column_stack([X,Y])
+        XY0=XY[XY[:,1]==0]   # 이부분이 조금 비효율적인 것 같음
+        XY1=XY[XY[:,1]==1]   # 애초에 vectorized pred로 한번 돌 때 다하는게...
+        c0=np.mean(XY0[:,0])
+        c1=np.mean(XY1[:,0])
+    
+        #print(XY)
+        plt.figure(figsize=(12,0.5))
+        plt.scatter(XY0[:,0],np.zeros(len(XY0)), c='g')
+        plt.scatter(XY1[:,0],np.zeros(len(XY1)), c='r')
+        plt.yticks([]);
+        plt.xticks(range(int(np.min(XY[:,0])),int(np.max(XY[:,0]))+1));    
+        
+X = np.array([1,2,3,6,7,9,11,12,14,15,19,20,30,31,33])
+kmeans(X,10,5,6)
